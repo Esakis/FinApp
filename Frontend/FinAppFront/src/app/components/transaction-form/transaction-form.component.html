@@ -1,0 +1,25 @@
+<form [formGroup]="transactionForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="amount">Kwota</label>
+      <input type="number" id="amount" formControlName="amount" class="form-control" />
+    </div>
+    <div class="form-group">
+      <label for="date">Data</label>
+      <input type="date" id="date" formControlName="date" class="form-control" />
+    </div>
+    <div class="form-group">
+      <label for="description">Opis</label>
+      <input type="text" id="description" formControlName="description" class="form-control" />
+    </div>
+    <div class="form-group">
+      <label for="categoryId">Kategoria</label>
+      <select id="categoryId" formControlName="categoryId" class="form-control">
+        <option [value]="null">Wybierz kategorię</option>
+        <option *ngFor="let category of categories" [value]="category.id">
+          {{ category.name }}
+        </option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Dodaj transakcję</button>
+  </form>
+  
