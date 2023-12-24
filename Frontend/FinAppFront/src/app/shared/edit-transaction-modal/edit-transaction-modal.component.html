@@ -1,0 +1,51 @@
+<h2 class="modal-header">Edytuj Transakcję</h2>
+
+<form [formGroup]="editForm" class="modal-form">
+  
+  <!-- Pole Kwota -->
+  <div class="form-field">
+    <label for="amount">Kwota</label>
+    <input id="amount" formControlName="amount" type="number" placeholder="Wprowadź kwotę">
+    <div *ngIf="editForm.controls['amount'].invalid" class="error-message">
+      Nieprawidłowa kwota
+    </div>
+  </div>
+
+  <!-- Pole Data -->
+  <div class="form-field">
+    <label for="date">Data</label>
+    <input id="date" formControlName="date" type="date">
+    <div *ngIf="editForm.controls['date'].invalid" class="error-message">
+      Nieprawidłowa data
+    </div>
+  </div>
+
+  <!-- Pole Opis -->
+  <div class="form-field">
+    <label for="description">Opis</label>
+    <input id="description" formControlName="description" type="text" placeholder="Wprowadź opis">
+    <div *ngIf="editForm.controls['description'].invalid" class="error-message">
+      Nieprawidłowy opis
+    </div>
+  </div>
+
+  <!-- Pole Kategoria -->
+  <div class="form-field">
+    <label for="category">Kategoria</label>
+    <select id="category" formControlName="categoryId">
+      <option *ngFor="let category of categories" [value]="category.id">
+        {{ category.name }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Przyciski Akcji -->
+  <div class="actions">
+    <button type="submit" class="modal-button" (click)="onSubmit()" [disabled]="!editForm.valid">
+      Zapisz
+    </button>
+    <button type="button" class="modal-button" (click)="onCancel()">
+      Anuluj
+    </button>
+  </div>
+</form>

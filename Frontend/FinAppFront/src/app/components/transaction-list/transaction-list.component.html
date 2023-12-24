@@ -1,27 +1,31 @@
 <div *ngIf="transactions.length > 0; else noTransactions">
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Kwota</th>
-          <th>Data</th>
-          <th>Opis</th>
-          <th (click)="sortByCategory()">Kategoria</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let transaction of transactions">
-          <td>{{ transaction.id }}</td>
-          <td>{{ transaction.amount | currency }}</td>
-          <td>{{ transaction.date | date }}</td>
-          <td>{{ transaction.description }}</td>
-          <td>{{ getCategoryName(transaction.categoryId) }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  
-  <ng-template #noTransactions>
-    <p>Brak transakcji do wyświetlenia.</p>
-  </ng-template>
-  
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Kwota</th>
+        <th>Data</th>
+        <th>Opis</th>
+        <th (click)="sortByCategory()">Kategoria</th>
+        <th>Akcje</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let transaction of transactions">
+        <td>{{ transaction.id }}</td>
+        <td>{{ transaction.amount | currency }}</td>
+        <td>{{ transaction.date | date }}</td>
+        <td>{{ transaction.description }}</td>
+        <td>{{ getCategoryName(transaction.categoryId) }}</td>
+        <td>
+          <button class="edit-btn" (click)="deleteTransaction(transaction.id)">Usuń</button>
+          <button class="delete-btn" (click)="editTransaction(transaction)">Edytuj</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<ng-template #noTransactions>
+  <p>Brak transakcji do wyświetlenia.</p>
+</ng-template>

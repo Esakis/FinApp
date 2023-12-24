@@ -17,9 +17,6 @@ export class SummaryComponent implements OnInit {
     this.transactionService.getTransactionsSummary().subscribe(
       (data) => {
         this.summary = data;
-      },
-      (error) => {
-        console.error('Error fetching transaction summary', error);
       }
     );
   }

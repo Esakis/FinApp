@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TransactionService } from './services/transaction.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'FinAppFront';
+  constructor(private transactionService: TransactionService) {}
+
+  ngOnInit() {
+    this.transactionService.loadCategories();
+  }
 }

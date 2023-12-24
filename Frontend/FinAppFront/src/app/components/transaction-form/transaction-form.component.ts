@@ -1,17 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Category } from 'src/app/models/category.model';
-import { Transaction } from 'src/app/models/transaction.model';
 import { TransactionService } from 'src/app/services/transaction.service';
+import { Subscription } from 'rxjs';
+import { Transaction } from 'src/app/models/transaction.model';
 
 @Component({
   selector: 'app-transaction-form',
   templateUrl: './transaction-form.component.html',
   styleUrls: ['./transaction-form.component.scss']
 })
-export class TransactionFormComponent implements OnInit {
+export class TransactionFormComponent implements OnInit, OnDestroy {
   transactionForm: FormGroup;
   categories: Category[] = [];
+  private categoriesSubscription: Subscription | undefined;
 
   constructor(
     private fb: FormBuilder,
@@ -28,15 +30,12 @@ export class TransactionFormComponent implements OnInit {
       userId: [1, Validators.required] 
     });
   }
-  
 
   ngOnInit(): void {
-    this.transactionService.getAllCategories().subscribe(
+    this.categoriesSubscription = this.transactionService.categories$.subscribe(
       (data: Category[]) => {
         this.categories = data;
-      },
-      (error) => {
-        console.error('Error fetching categories', error);
+        console.log(data)
       }
     );
   }
@@ -48,11 +47,14 @@ export class TransactionFormComponent implements OnInit {
         (response) => {
           console.log('Transakcja dodana pomyślnie', response);
           this.transactionForm.reset();
-        },
-        (error) => {
-          console.error('Błąd podczas dodawania transakcji', error);
         }
       );
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.categoriesSubscription) {
+      this.categoriesSubscription.unsubscribe();
     }
   }
 }

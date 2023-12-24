@@ -1,0 +1,41 @@
+
+.mat-dialog-container {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal-header {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+  
+  .modal-form {
+    display: grid;
+    grid-gap: 10px;
+  
+    input, select {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+  }
+  
+  .modal-button {
+    margin-top: 20px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff; 
+    transition: background-color 0.3s;
+  }
+  
+  .modal-button:hover {
+    background-color: #0056b3; 
+  }
+  

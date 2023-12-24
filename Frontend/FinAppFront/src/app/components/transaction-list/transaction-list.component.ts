@@ -1,25 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Category } from 'src/app/models/category.model';
 import { Transaction } from 'src/app/models/transaction.model';
 import { TransactionService } from 'src/app/services/transaction.service';
-
+import { MatDialog } from '@angular/material/dialog';
+import { EditTransactionModalComponent } from 'src/app/shared/edit-transaction-modal/edit-transaction-modal.component';
 
 @Component({
   selector: 'app-transaction-list',
   templateUrl: './transaction-list.component.html',
   styleUrls: ['./transaction-list.component.scss']
 })
-export class TransactionListComponent implements OnInit {
+export class TransactionListComponent implements OnInit, OnDestroy {
   transactions: Transaction[] = [];
   categories: Category[] = [];
   isSortAsc: boolean = true; 
-  
+  private categoriesSubscription: Subscription = new Subscription;
 
-  constructor(private transactionService: TransactionService) {}
+  constructor(private transactionService: TransactionService,
+    private dialog: MatDialog) {}
 
   ngOnInit() {
     this.loadTransactions();
-    this.loadCategories();
+    this.categoriesSubscription = this.transactionService.categories$.subscribe(
+      (data) => {
+        this.categories = data;
+      }
+    );
   }
 
   loadTransactions() {
@@ -33,15 +40,16 @@ export class TransactionListComponent implements OnInit {
     );
   }
 
-  loadCategories() {
-    this.transactionService.getAllCategories().subscribe(
-      (data) => {
-        this.categories = data;
-      },
-      (error) => {
-        console.error('Error fetching categories', error);
-      }
-    );
+  deleteTransaction(id: number): void {
+    this.transactionService.deleteTransaction(id).subscribe(() => {
+      this.transactions = this.transactions.filter(transaction => transaction.id !== id);
+    }, error => {
+      console.error('Error deleting transaction', error);
+    });
+  }
+
+  editTransaction(transaction: Transaction): void {
+    this.dialog.open(EditTransactionModalComponent, { data: { transaction } });
   }
 
   getCategoryName(categoryId: number): string {
@@ -62,6 +70,10 @@ export class TransactionListComponent implements OnInit {
   
     this.isSortAsc = !this.isSortAsc;
   }
-  
-  
+
+  ngOnDestroy(): void {
+    if (this.categoriesSubscription) {
+      this.categoriesSubscription.unsubscribe();
+    }
+  }
 }
