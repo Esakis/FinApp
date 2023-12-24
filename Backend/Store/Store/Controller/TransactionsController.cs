@@ -97,5 +97,19 @@ namespace Store.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("getAllCategories")]
+        public async Task<IActionResult> GetAllCategories()
+        {
+            try
+            {
+                var category = await _transactionService.GetAllCategoriesAsync();
+                return Ok(category);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

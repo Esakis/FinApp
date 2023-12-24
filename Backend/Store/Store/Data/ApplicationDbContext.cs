@@ -18,19 +18,20 @@ namespace Store.Data
         {
             base.OnModelCreating(modelBuilder);
 
-           
-            modelBuilder.Entity<TransactionModel>()
-                .HasOne(t => t.Category)
-                .WithMany(c => c.Transactions)
-                .HasForeignKey(t => t.CategoryId);
 
-           
             modelBuilder.Entity<TransactionModel>()
-                .HasOne(t => t.User)
-                .WithMany(u => u.Transactions)
-                .HasForeignKey(t => t.UserId);
+                .HasOne<CategoryModel>() 
+                .WithMany()
+                .HasForeignKey(t => t.CategoryId)
+                .IsRequired(); 
 
-      
+            modelBuilder.Entity<TransactionModel>()
+                .HasOne<UserModel>() 
+                .WithMany()
+                .HasForeignKey(t => t.UserId)
+                .IsRequired(); 
+
+
             modelBuilder.Entity<CategoryModel>().HasData(
                new CategoryModel { Id = 1, Name = "Jedzenie" },
                new CategoryModel { Id = 2, Name = "Rozrywka" },

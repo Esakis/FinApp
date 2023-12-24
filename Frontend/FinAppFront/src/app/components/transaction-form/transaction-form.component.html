@@ -1,25 +1,37 @@
 <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="amount">Kwota</label>
-      <input type="number" id="amount" formControlName="amount" class="form-control" />
+  <div class="form-group">
+    <label for="amount">Kwota</label>
+    <input type="number" id="amount" formControlName="amount" class="form-control" />
+    <div *ngIf="transactionForm.get('amount')?.touched && transactionForm.get('amount')?.errors?.['required']" class="alert alert-danger">
+      Pole kwota jest wymagane.
     </div>
-    <div class="form-group">
-      <label for="date">Data</label>
-      <input type="date" id="date" formControlName="date" class="form-control" />
+  </div>
+
+  <div class="form-group">
+    <label for="date">Data</label>
+    <input type="date" id="date" formControlName="date" class="form-control" />
+  </div>
+
+  <div class="form-group">
+    <label for="description">Opis</label>
+    <input type="text" id="description" formControlName="description" class="form-control" />
+    <div *ngIf="transactionForm.get('description')?.touched && transactionForm.get('description')?.errors?.['required']" class="alert alert-danger">
+      Pole opis jest wymagane.
     </div>
-    <div class="form-group">
-      <label for="description">Opis</label>
-      <input type="text" id="description" formControlName="description" class="form-control" />
+  </div>
+
+  <div class="form-group">
+    <label for="categoryId">Kategoria</label>
+    <select id="categoryId" formControlName="categoryId" class="form-control">
+      <option [value]="null">Wybierz kategorię</option>
+      <option *ngFor="let category of categories" [value]="category.id">
+        {{ category.name }}
+      </option>
+    </select>
+    <div *ngIf="transactionForm.get('categoryId')?.touched && transactionForm.get('categoryId')?.errors?.['required']" class="alert alert-danger">
+      Pole kategoria jest wymagane.
     </div>
-    <div class="form-group">
-      <label for="categoryId">Kategoria</label>
-      <select id="categoryId" formControlName="categoryId" class="form-control">
-        <option [value]="null">Wybierz kategorię</option>
-        <option *ngFor="let category of categories" [value]="category.id">
-          {{ category.name }}
-        </option>
-      </select>
-    </div>
-    <button type="submit" class="btn btn-primary">Dodaj transakcję</button>
-  </form>
-  
+  </div>
+
+  <button type="submit" class="btn btn-primary" [disabled]="!transactionForm.valid">Dodaj transakcję</button>
+</form>

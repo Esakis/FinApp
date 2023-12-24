@@ -1,1 +1,17 @@
-<p>summary works!</p>
+<div *ngIf="summary; else loading">
+    <h2>Podsumowanie transakcji</h2>
+    <p>Łączny dochód: {{ summary.totalIncome | currency }}</p>
+    <p>Łączny wydatek: {{ summary.totalExpense | currency }}</p>
+    <p>Saldo: {{ summary.balance | currency }}</p>
+    <p>Łączna liczba transakcji: {{ summary.totalTransactionsCount }}</p>
+    <p>Średni dochód na transakcję: {{ summary.averageIncomePerTransaction | currency }}</p>
+    <p>Średni wydatek na transakcję: {{ summary.averageExpensePerTransaction | currency }}</p>
+    <p>Największa transakcja: {{ summary.highestTransactionAmount | currency }}</p>
+    <p>Najmniejsza transakcja: {{ summary.lowestTransactionAmount | currency }}</p>
+    <p>Data najnowszej transakcji: {{ summary.mostRecentTransactionDate | date }}</p>
+  </div>
+  
+  <ng-template #loading>
+    <p>Ładowanie podsumowania...</p>
+  </ng-template>
+  

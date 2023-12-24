@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Store.Bootstrap;
 using Store.Data;
 
 public class Startup
@@ -12,10 +13,13 @@ public class Startup
     public IConfiguration Configuration { get; }
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddCors();
         services.AddControllers();
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         services.AddHttpClient();
+        services.AddSwaggerGen();
+        new DependencyInjectionBootstraper().Setup(services, Configuration);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -25,11 +29,27 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
+        app.UseHttpsRedirection();
+        app.UseSwagger();
+
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        });
         app.UseRouting();
+
+        app.UseCors(x => x
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowAnyOrigin()); // allow any origin
+
+        app.UseAuthorization();
+
 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
         });
+
     }
 }

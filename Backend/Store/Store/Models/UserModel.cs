@@ -10,6 +10,5 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        public ICollection<TransactionModel> Transactions { get; set; }
     }
 }

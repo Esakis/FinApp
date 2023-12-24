@@ -159,31 +159,17 @@ namespace Store.Migrations
 
             modelBuilder.Entity("Store.Models.TransactionModel", b =>
                 {
-                    b.HasOne("Store.Models.CategoryModel", "Category")
-                        .WithMany("Transactions")
+                    b.HasOne("Store.Models.CategoryModel", null)
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Store.Models.UserModel", "User")
-                        .WithMany("Transactions")
+                    b.HasOne("Store.Models.UserModel", null)
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Store.Models.CategoryModel", b =>
-                {
-                    b.Navigation("Transactions");
-                });
-
-            modelBuilder.Entity("Store.Models.UserModel", b =>
-                {
-                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }

@@ -10,4 +10,5 @@ public interface ITransactionService
     Task<TransactionSummary> GetTransactionSummaryForUserAsync(int userId);
     Task<TransactionSummary> GetOverallTransactionSummaryAsync();
     Task<IEnumerable<TransactionModel>> GetTransactionsByCategoryAsync(int categoryId);
+    Task<IEnumerable<CategoryModel>> GetAllCategoriesAsync();
 }

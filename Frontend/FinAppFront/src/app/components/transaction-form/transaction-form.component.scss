@@ -1,39 +1,61 @@
-/* Stylizacja formularza */
+
 form {
-    max-width: 400px;
-    margin: 0 auto;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+
+  label {
+    font-weight: bold;
   }
-  
-  /* Stylizacja grupy formularza */
-  .form-group {
-    margin-bottom: 20px;
-  
-    label {
-      font-weight: bold;
-    }
-  
-    input,
-    select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-  }
-  
-  /* Stylizacja przycisku */
-  button {
-    display: block;
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
+
+  input,
+  select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
     border-radius: 4px;
-    cursor: pointer;
-  
-    &:hover {
-      background-color: #0056b3;
-    }
   }
-  
+
+  .alert {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  input.ng-invalid.ng-touched + .alert,
+  select.ng-invalid.ng-touched + .alert {
+    display: block;
+  }
+}
+
+button {
+  display: block;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+
+  &:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+  }
+}

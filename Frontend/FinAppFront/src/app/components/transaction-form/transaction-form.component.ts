@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Category } from 'src/app/models/category.model';
 import { Transaction } from 'src/app/models/transaction.model';
@@ -10,7 +10,6 @@ import { TransactionService } from 'src/app/services/transaction.service';
   styleUrls: ['./transaction-form.component.scss']
 })
 export class TransactionFormComponent implements OnInit {
-  @Output() addTransaction = new EventEmitter<Transaction>();
   transactionForm: FormGroup;
   categories: Category[] = [];
 
@@ -18,13 +17,18 @@ export class TransactionFormComponent implements OnInit {
     private fb: FormBuilder,
     private transactionService: TransactionService
   ) {
+    const today = new Date();
+    const currentDate = today.toISOString().substring(0, 10); 
+  
     this.transactionForm = this.fb.group({
       amount: [null, [Validators.required, Validators.min(0)]],
-      date: [null, Validators.required],
+      date: [currentDate, Validators.required], 
       description: [null, Validators.required],
-      categoryId: [null, Validators.required]
+      categoryId: [null, Validators.required],
+      userId: [1, Validators.required] 
     });
   }
+  
 
   ngOnInit(): void {
     this.transactionService.getAllCategories().subscribe(
@@ -40,8 +44,15 @@ export class TransactionFormComponent implements OnInit {
   onSubmit(): void {
     if (this.transactionForm.valid) {
       const newTransaction: Transaction = this.transactionForm.value;
-      this.addTransaction.emit(newTransaction);
-      this.transactionForm.reset();
+      this.transactionService.addTransaction(newTransaction).subscribe(
+        (response) => {
+          console.log('Transakcja dodana pomyślnie', response);
+          this.transactionForm.reset();
+        },
+        (error) => {
+          console.error('Błąd podczas dodawania transakcji', error);
+        }
+      );
     }
   }
 }
