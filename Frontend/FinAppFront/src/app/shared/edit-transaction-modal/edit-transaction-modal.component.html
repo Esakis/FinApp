@@ -1,51 +1,37 @@
-<h2 class="modal-header">Edytuj Transakcję</h2>
+<div class="main">
+  <h2 class="modal-header">Szczegóły Transakcji</h2>
 
-<form [formGroup]="editForm" class="modal-form">
+  <div class="modal-form">
   
-  <!-- Pole Kwota -->
-  <div class="form-field">
-    <label for="amount">Kwota</label>
-    <input id="amount" formControlName="amount" type="number" placeholder="Wprowadź kwotę">
-    <div *ngIf="editForm.controls['amount'].invalid" class="error-message">
-      Nieprawidłowa kwota
+    <div class="form-field">
+      <label>Kwota:</label>
+      <span>{{ data.transaction.amount }}</span>
+    </div>
+  
+  
+    <div class="form-field">
+      <label>Data:</label>
+      <span>{{ data.transaction.date | date }}</span>
+    </div>
+  
+  
+    <div class="form-field">
+      <label>Opis:</label>
+      <span>{{ data.transaction.description }}</span>
+    </div>
+  
+  
+    <div class="form-field">
+      <label>Kategoria:</label>
+      <span>{{ getCategoryName(data.transaction.categoryId) }}</span>
+    </div>
+  
+  
+    <div class="actions">
+      <button type="button" class="modal-button" (click)="onCancel()">
+        Zamknij
+      </button>
     </div>
   </div>
-
-  <!-- Pole Data -->
-  <div class="form-field">
-    <label for="date">Data</label>
-    <input id="date" formControlName="date" type="date">
-    <div *ngIf="editForm.controls['date'].invalid" class="error-message">
-      Nieprawidłowa data
-    </div>
-  </div>
-
-  <!-- Pole Opis -->
-  <div class="form-field">
-    <label for="description">Opis</label>
-    <input id="description" formControlName="description" type="text" placeholder="Wprowadź opis">
-    <div *ngIf="editForm.controls['description'].invalid" class="error-message">
-      Nieprawidłowy opis
-    </div>
-  </div>
-
-  <!-- Pole Kategoria -->
-  <div class="form-field">
-    <label for="category">Kategoria</label>
-    <select id="category" formControlName="categoryId">
-      <option *ngFor="let category of categories" [value]="category.id">
-        {{ category.name }}
-      </option>
-    </select>
-  </div>
-
-  <!-- Przyciski Akcji -->
-  <div class="actions">
-    <button type="submit" class="modal-button" (click)="onSubmit()" [disabled]="!editForm.valid">
-      Zapisz
-    </button>
-    <button type="button" class="modal-button" (click)="onCancel()">
-      Anuluj
-    </button>
-  </div>
-</form>
+  
+</div>

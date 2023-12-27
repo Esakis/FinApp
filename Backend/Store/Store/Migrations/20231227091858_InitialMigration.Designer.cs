@@ -12,7 +12,7 @@ using Store.Data;
 namespace Store.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231223164521_InitialMigration")]
+    [Migration("20231227091858_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,9 @@ namespace Store.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<bool>("CategoryIncome")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -44,52 +47,68 @@ namespace Store.Migrations
                         new
                         {
                             Id = 1,
+                            CategoryIncome = false,
                             Name = "Jedzenie"
                         },
                         new
                         {
                             Id = 2,
+                            CategoryIncome = false,
                             Name = "Rozrywka"
                         },
                         new
                         {
                             Id = 3,
+                            CategoryIncome = false,
                             Name = "Rachunki"
                         },
                         new
                         {
                             Id = 4,
+                            CategoryIncome = false,
                             Name = "Transport"
                         },
                         new
                         {
                             Id = 5,
+                            CategoryIncome = false,
                             Name = "Zdrowie"
                         },
                         new
                         {
                             Id = 6,
+                            CategoryIncome = false,
                             Name = "Edukacja"
                         },
                         new
                         {
                             Id = 7,
+                            CategoryIncome = false,
                             Name = "Zakupy"
                         },
                         new
                         {
                             Id = 8,
+                            CategoryIncome = false,
                             Name = "Oszczędności"
                         },
                         new
                         {
                             Id = 9,
+                            CategoryIncome = false,
                             Name = "Podróże"
                         },
                         new
                         {
                             Id = 10,
+                            CategoryIncome = false,
                             Name = "Inne"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CategoryIncome = true,
+                            Name = "Przychód"
                         });
                 });
 
@@ -114,6 +133,9 @@ namespace Store.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Income")
+                        .HasColumnType("bit");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -133,6 +155,9 @@ namespace Store.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -157,6 +182,18 @@ namespace Store.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Balance = 1000000m,
+                            Email = "default@example.com",
+                            FirstName = "Default",
+                            LastName = "User",
+                            PasswordHash = "hashed_password",
+                            Username = "defaultuser"
+                        });
                 });
 
             modelBuilder.Entity("Store.Models.TransactionModel", b =>

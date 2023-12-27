@@ -5,9 +5,12 @@
   </div>
   <nav>
     <ul>
-      <li><a routerLink="/">Strona główna</a></li>
-      <li><a routerLink="/transactions">Transakcje</a></li>
-      <li><a routerLink="/summary">Podsumowanie</a></li>
+      <li><a routerLink="/">Dodaj transakcje</a></li>
+      <li><a routerLink="/transactions">List Transakcji</a></li>
     </ul>
   </nav>
+  <div *ngIf="userService.user$ | async as user" class="user-info">
+    <span>{{ user.firstName }} {{ user.lastName }} , </span>
+    <span>Stan konta: {{ user.balance | currency:'USD':'symbol' }}</span>
+  </div>
 </header>

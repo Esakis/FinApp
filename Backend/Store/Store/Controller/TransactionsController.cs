@@ -27,6 +27,19 @@ namespace Store.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost("Update")]
+        public async Task<IActionResult> UpdateTransaction([FromBody] TransactionModel transaction)
+        {
+            try
+            {
+                await _transactionService.UpdateTransactionAsync(transaction);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllTransactions()
@@ -54,35 +67,7 @@ namespace Store.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        [HttpGet("summary/user/{userId}")]
-        public async Task<IActionResult> GetUserTransactionSummary(int userId)
-        {
-            try
-            {
-                var summary = await _transactionService.GetTransactionSummaryForUserAsync(userId);
-                return Ok(summary);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("summary/overall")]
-        public async Task<IActionResult> GetOverallTransactionSummary()
-        {
-            try
-            {
-                var summary = await _transactionService.GetOverallTransactionSummaryAsync();
-                return Ok(summary);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        }      
 
         [HttpGet("by-category/{categoryId}")]
         public async Task<IActionResult> GetTransactionsByCategory(int categoryId)

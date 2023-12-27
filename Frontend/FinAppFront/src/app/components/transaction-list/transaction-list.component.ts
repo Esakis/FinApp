@@ -5,6 +5,8 @@ import { Transaction } from 'src/app/models/transaction.model';
 import { TransactionService } from 'src/app/services/transaction.service';
 import { MatDialog } from '@angular/material/dialog';
 import { EditTransactionModalComponent } from 'src/app/shared/edit-transaction-modal/edit-transaction-modal.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-transaction-list',
@@ -17,8 +19,12 @@ export class TransactionListComponent implements OnInit, OnDestroy {
   isSortAsc: boolean = true; 
   private categoriesSubscription: Subscription = new Subscription;
 
-  constructor(private transactionService: TransactionService,
-    private dialog: MatDialog) {}
+  constructor(
+    private transactionService: TransactionService,
+    private dialog: MatDialog,
+    private userService: UserService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit() {
     this.loadTransactions();
@@ -35,6 +41,9 @@ export class TransactionListComponent implements OnInit, OnDestroy {
         this.transactions = data;
       },
       (error) => {
+        this.snackBar.open('Błąd podczas ładowania transakcji', 'Zamknij', {
+          duration: 3000
+        });
         console.error('Error fetching transactions', error);
       }
     );
@@ -43,7 +52,14 @@ export class TransactionListComponent implements OnInit, OnDestroy {
   deleteTransaction(id: number): void {
     this.transactionService.deleteTransaction(id).subscribe(() => {
       this.transactions = this.transactions.filter(transaction => transaction.id !== id);
+      this.userService.refreshUser(); // Odświeżanie stanu konta użytkownika
+      this.snackBar.open('Transakcja została usunięta', 'Zamknij', {
+        duration: 3000
+      });
     }, error => {
+      this.snackBar.open('Błąd podczas usuwania transakcji', 'Zamknij', {
+        duration: 3000
+      });
       console.error('Error deleting transaction', error);
     });
   }

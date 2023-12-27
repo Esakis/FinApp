@@ -4,7 +4,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TransactionListComponent } from './components/transaction-list/transaction-list.component';
 import { TransactionFormComponent } from './components/transaction-form/transaction-form.component';
-import { SummaryComponent } from './components/summary/summary.component';
 import { HeaderComponent } from './shared/header/header.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -13,6 +12,7 @@ import { EditTransactionModalComponent } from './shared/edit-transaction-modal/e
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 @NgModule({
@@ -20,7 +20,6 @@ import { MatInputModule } from '@angular/material/input';
     AppComponent,
     TransactionListComponent,
     TransactionFormComponent,
-    SummaryComponent,
     HeaderComponent,
     EditTransactionModalComponent,
   ],
@@ -33,6 +32,7 @@ import { MatInputModule } from '@angular/material/input';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSnackBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

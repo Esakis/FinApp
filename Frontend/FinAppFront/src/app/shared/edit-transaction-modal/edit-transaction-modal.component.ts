@@ -1,6 +1,5 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { Category } from 'src/app/models/category.model';
 import { Transaction } from 'src/app/models/transaction.model';
@@ -11,26 +10,15 @@ import { TransactionService } from 'src/app/services/transaction.service';
   templateUrl: './edit-transaction-modal.component.html',
   styleUrls: ['./edit-transaction-modal.component.scss']
 })
-export class EditTransactionModalComponent implements OnInit {
-onCancel() {
-throw new Error('Method not implemented.');
-}
-  editForm: FormGroup;
+export class EditTransactionModalComponent implements OnInit, OnDestroy {
   categories: Category[] = [];
   private categoriesSubscription: Subscription = new Subscription;
 
   constructor(
     private transactionService: TransactionService,
-    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<EditTransactionModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { transaction: Transaction }
-  ) {
-    this.editForm = this.fb.group({
-      amount: [data.transaction.amount],
-      date: [data.transaction.date],
-      description: [data.transaction.description],
-      categoryId: [data.transaction.categoryId]
-    });
-  }
+  ) {}
 
   ngOnInit() {
     this.categoriesSubscription = this.transactionService.categories$.subscribe(
@@ -40,7 +28,13 @@ throw new Error('Method not implemented.');
     );
   }
 
-  onSubmit(): void {
+  getCategoryName(categoryId: number): string {
+    const category = this.categories.find(c => c.id === categoryId);
+    return category ? category.name : 'Nieznana kategoria';
+  }
+
+  onCancel(): void {
+    this.dialogRef.close(); 
   }
 
   ngOnDestroy(): void {

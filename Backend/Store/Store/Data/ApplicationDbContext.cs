@@ -5,9 +5,9 @@ namespace Store.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public DbSet<TransactionModel> Transactions { get; set; }
-        public DbSet<CategoryModel> Categories { get; set; }
-        public DbSet<UserModel> Users { get; set; } 
+        public DbSet<TransactionModel> Transactions { get; set; } = default!;
+        public DbSet<CategoryModel> Categories { get; set; } = default!;
+        public DbSet<UserModel> Users { get; set; } = default!;
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -33,17 +33,31 @@ namespace Store.Data
 
 
             modelBuilder.Entity<CategoryModel>().HasData(
-               new CategoryModel { Id = 1, Name = "Jedzenie" },
-               new CategoryModel { Id = 2, Name = "Rozrywka" },
-               new CategoryModel { Id = 3, Name = "Rachunki" },
-               new CategoryModel { Id = 4, Name = "Transport" },
-               new CategoryModel { Id = 5, Name = "Zdrowie" },
-               new CategoryModel { Id = 6, Name = "Edukacja" },
-               new CategoryModel { Id = 7, Name = "Zakupy" },
-               new CategoryModel { Id = 8, Name = "Oszczędności" },
-               new CategoryModel { Id = 9, Name = "Podróże" },
-               new CategoryModel { Id = 10, Name = "Inne" }
+               new CategoryModel { Id = 1, Name = "Jedzenie", CategoryIncome = false },
+               new CategoryModel { Id = 2, Name = "Rozrywka", CategoryIncome = false },
+               new CategoryModel { Id = 3, Name = "Rachunki", CategoryIncome = false },
+               new CategoryModel { Id = 4, Name = "Transport", CategoryIncome = false },
+               new CategoryModel { Id = 5, Name = "Zdrowie" , CategoryIncome = false },
+               new CategoryModel { Id = 6, Name = "Edukacja" , CategoryIncome = false },
+               new CategoryModel { Id = 7, Name = "Zakupy" , CategoryIncome = false },
+               new CategoryModel { Id = 8, Name = "Oszczędności" , CategoryIncome = true },
+               new CategoryModel { Id = 9, Name = "Podróże", CategoryIncome = false },
+               new CategoryModel { Id = 10, Name = "Inne", CategoryIncome = false },
+               new CategoryModel { Id = 11, Name = "Przychód", CategoryIncome = true }
             );
+
+            modelBuilder.Entity<UserModel>().HasData(
+               new UserModel
+               {
+                   Id = 1,
+                   Username = "defaultuser",
+                   Email = "default@example.com",
+                   PasswordHash = "hashed_password",
+                   FirstName = "Default",
+                   LastName = "User",
+                   Balance = 1000000
+               }
+           );
         }
     }
 }

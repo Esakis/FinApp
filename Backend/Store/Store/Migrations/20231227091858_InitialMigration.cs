@@ -15,7 +15,8 @@ namespace Store.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryIncome = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,7 +33,8 @@ namespace Store.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -49,7 +51,8 @@ namespace Store.Migrations
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Income = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -70,20 +73,26 @@ namespace Store.Migrations
 
             migrationBuilder.InsertData(
                 table: "Categories",
-                columns: new[] { "Id", "Name" },
+                columns: new[] { "Id", "CategoryIncome", "Name" },
                 values: new object[,]
                 {
-                    { 1, "Jedzenie" },
-                    { 2, "Rozrywka" },
-                    { 3, "Rachunki" },
-                    { 4, "Transport" },
-                    { 5, "Zdrowie" },
-                    { 6, "Edukacja" },
-                    { 7, "Zakupy" },
-                    { 8, "Oszczędności" },
-                    { 9, "Podróże" },
-                    { 10, "Inne" }
+                    { 1, false, "Jedzenie" },
+                    { 2, false, "Rozrywka" },
+                    { 3, false, "Rachunki" },
+                    { 4, false, "Transport" },
+                    { 5, false, "Zdrowie" },
+                    { 6, false, "Edukacja" },
+                    { 7, false, "Zakupy" },
+                    { 8, false, "Oszczędności" },
+                    { 9, false, "Podróże" },
+                    { 10, false, "Inne" },
+                    { 11, true, "Przychód" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Balance", "Email", "FirstName", "LastName", "PasswordHash", "Username" },
+                values: new object[] { 1, 1000000m, "default@example.com", "Default", "User", "hashed_password", "defaultuser" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_CategoryId",
