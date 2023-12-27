@@ -87,7 +87,7 @@ namespace Store.Migrations
                         new
                         {
                             Id = 8,
-                            CategoryIncome = false,
+                            CategoryIncome = true,
                             Name = "Oszczędności"
                         },
                         new
@@ -128,7 +128,6 @@ namespace Store.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Income")

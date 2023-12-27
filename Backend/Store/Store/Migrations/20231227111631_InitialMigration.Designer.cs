@@ -12,7 +12,7 @@ using Store.Data;
 namespace Store.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231227091858_InitialMigration")]
+    [Migration("20231227111631_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,7 +89,7 @@ namespace Store.Migrations
                         new
                         {
                             Id = 8,
-                            CategoryIncome = false,
+                            CategoryIncome = true,
                             Name = "Oszczędności"
                         },
                         new
@@ -130,7 +130,6 @@ namespace Store.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Income")
