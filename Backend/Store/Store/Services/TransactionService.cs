@@ -24,17 +24,14 @@ namespace Store.Services
                     throw new InvalidOperationException("Użytkownik nie istnieje");
                 }
 
-                var categoryExists = await _context.Categories.AnyAsync(c => c.Id == transaction.CategoryId);
-                if (!categoryExists)
+                var categoryExists = await _context.Categories.FirstOrDefaultAsync(c => c.Id == transaction.CategoryId);
+                if (categoryExists == null)
                 {
-                    if (!await _context.Categories.AnyAsync(c => c.Id == 10))
-                    {
-                        throw new InvalidOperationException("Kategoria domyślna (ID: 10) nie istnieje w bazie danych");
-                    }
+                    categoryExists = await _context.Categories.FirstOrDefaultAsync(c => c.Id == 10);
                     transaction.CategoryId = 10;
                 }
 
-                if (transaction.Income)
+                if (categoryExists.CategoryIncome)
                 {
                     user.Balance += transaction.Amount; 
                 }
@@ -51,53 +48,6 @@ namespace Store.Services
                 scope.Complete();
             }
         }
-
-        public async Task UpdateTransactionAsync(TransactionModel updatedTransaction)
-        {
-            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == updatedTransaction.Id);
-                if (transaction == null)
-                {
-                    throw new InvalidOperationException("Transakcja nie istnieje");
-                }
-
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == transaction.UserId);
-                if (user == null)
-                {
-                    throw new InvalidOperationException("Użytkownik nie istnieje");
-                }
-
-                if (transaction.Income)
-                {
-                    user.Balance -= transaction.Amount;
-                }
-                else
-                {
-                    user.Balance += transaction.Amount;
-                }
-
-                transaction.Amount = updatedTransaction.Amount;
-                transaction.Date = updatedTransaction.Date;
-                transaction.Description = updatedTransaction.Description;
-                transaction.CategoryId = updatedTransaction.CategoryId;
-                transaction.Income = updatedTransaction.Income;
-
-                if (updatedTransaction.Income)
-                {
-                    user.Balance += updatedTransaction.Amount;
-                }
-                else
-                {
-                    user.Balance -= updatedTransaction.Amount;
-                }
-
-                await _context.SaveChangesAsync();
-
-                scope.Complete();
-            }
-        }
-
 
         public async Task<IEnumerable<TransactionModel>> GetAllTransactionsAsync()
         {
@@ -131,15 +81,21 @@ namespace Store.Services
                     throw new InvalidOperationException("Użytkownik nie istnieje");
                 }
 
-                if (transaction.Income)
+                var categoryExists = await _context.Categories.FirstOrDefaultAsync(c => c.Id == transaction.CategoryId);
+                if (categoryExists == null)
                 {
-                    user.Balance -= transaction.Amount; 
+                    categoryExists = await _context.Categories.FirstOrDefaultAsync(c => c.Id == 10);
+                    transaction.CategoryId = 10;
+                }
+
+                if (categoryExists.CategoryIncome)
+                {
+                    user.Balance -= transaction.Amount;
                 }
                 else
                 {
-                    user.Balance += transaction.Amount; 
+                    user.Balance += transaction.Amount;
                 }
-
                 _context.Transactions.Remove(transaction);
 
                 await _context.SaveChangesAsync();

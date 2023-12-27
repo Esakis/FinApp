@@ -6,7 +6,6 @@ public interface ITransactionService
     Task<IEnumerable<TransactionModel>> GetAllTransactionsAsync();
     Task<TransactionModel> GetTransactionByIdAsync(int id);
     Task DeleteTransactionAsync(int id);
-    Task UpdateTransactionAsync(TransactionModel transaction);
     Task<IEnumerable<TransactionModel>> GetTransactionsByCategoryAsync(int categoryId);
     Task<IEnumerable<CategoryModel>> GetAllCategoriesAsync();
 }
