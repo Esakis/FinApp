@@ -30,7 +30,7 @@ jobs:
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "Frontend/FinAppFront"
           api_location: "Backend/Store" 
-          output_location: "dist/FinAppFront" # Built app content directory - optional
+          output_location: "." # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
