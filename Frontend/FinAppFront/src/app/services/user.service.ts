@@ -9,7 +9,7 @@ import { UserModel } from '../models/user.model';
 export class UserService {
   private userSubject: BehaviorSubject<UserModel | null> = new BehaviorSubject<UserModel | null>(null);
   public user$: Observable<UserModel | null> = this.userSubject.asObservable();
-  private baseUrl = 'https://localhost:44367';
+  private baseUrl = 'https://localhost:7119';
 
   constructor(private http: HttpClient) {}
 

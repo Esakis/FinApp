@@ -9,7 +9,7 @@ import { UserModel } from '../models/user.model';
   providedIn: 'root'
 })
 export class TransactionService {
-  private baseUrl = 'https://localhost:44367'; 
+  private baseUrl = 'https://localhost:7119'; 
 
   private categoriesSubject = new BehaviorSubject<Category[]>([]);
   public categories$ = this.categoriesSubject.asObservable();
