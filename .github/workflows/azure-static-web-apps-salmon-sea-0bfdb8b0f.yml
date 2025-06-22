@@ -26,7 +26,7 @@ jobs:
       - name: Debug pokaż pliki builda
         working-directory: 'Frontend/FinAppFront'
         run: |
-          ls -R dist/FinAppFront
+          ls -R Frontend/FinAppFront/dist/FinAppFront
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
