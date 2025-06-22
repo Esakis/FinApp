@@ -1,3 +1,4 @@
+# .github/workflows/static-web-apps.yml
 name: Azure Static Web Apps CI/CD
 
 on:
@@ -9,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # ---------- Źródło ----------
+    # ---------- Pobranie repozytorium ----------
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # ---------- Front-end ----------
+    # ---------- Konfiguracja Node + cache ----------
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
@@ -21,17 +22,19 @@ jobs:
         cache: npm
         cache-dependency-path: Frontend/FinAppFront/package-lock.json
 
+    # ---------- Budowa front-endu (Angular) ----------
     - name: Build Angular app
       working-directory: Frontend/FinAppFront
       run: |
         npm ci
-        npm run build -- --configuration production     # ➜ dist/fin-app-front
+        npm run build -- --configuration production   # ➜ dist/fin-app-front
 
+    # (opcjonalnie) podgląd artefaktów builda
     - name: Debug – zawartość builda
       working-directory: Frontend/FinAppFront
       run: ls -R dist
 
-    # ---------- Back-end (Azure Functions .NET) ----------
+    # ---------- Konfiguracja .NET + budowa Azure Functions ----------
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
@@ -43,15 +46,23 @@ jobs:
         dotnet restore
         dotnet build --configuration Release
 
-    # ---------- Deploy ----------
+    # ---------- Deployment do Azure Static Web Apps ----------
     - name: Deploy to Azure Static Web Apps
       uses: Azure/static-web-apps-deploy@v1
       with:
+        # token z portalu Azure → Settings → Deployment Token
         azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-        repo_token:          ${{ secrets.GITHUB_TOKEN }}
-        action:              upload
-        app_location:        Frontend/FinAppFront          # źródła frontu
-        api_location:        Backend/Store                 # źródła funkcji
-        skip_app_build:      true                          # build wykonany wyżej
-        skip_api_build:      true
-        output_location:     dist/fin-app-front            # <-- tylko względna ścieżka!
+        # token GitHub – potrzebny do komentarzy w PR-ach
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+        action: upload
+
+        # ------- FRONT-END -------
+        # katalog z GOTOWYMI plikami (zawiera index.html)
+        app_location: Frontend/FinAppFront/dist/fin-app-front
+        skip_app_build: true
+        output_location: ''         # przy skip_app_build musi być pusty
+
+        # ------- BACK-END (.NET Functions) -------
+        api_location: Backend/Store
+        skip_api_build: true
