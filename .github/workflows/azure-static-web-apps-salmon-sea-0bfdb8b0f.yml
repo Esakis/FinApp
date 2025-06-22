@@ -2,8 +2,7 @@ name: Azure Static Web Apps CI/CD
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build_and_deploy:
@@ -19,20 +18,22 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18.x'
-        cache: 'npm'
+        cache: npm
+        # << kluczowa linia – pokazujemy gdzie leży package-lock.json >>
+        cache-dependency-path: Frontend/FinAppFront/package-lock.json
 
     - name: Build Angular app
       working-directory: Frontend/FinAppFront
       run: |
         npm ci
-        npm run build -- --configuration production   # wynik => dist/fin-app-front
+        npm run build -- --configuration production    # => dist/fin-app-front
 
-    - name: Debug – pokaż zawartość builda
+    - name: Debug – zawartość builda
       working-directory: Frontend/FinAppFront
       run: |
         ls -R dist
 
-    # ---------- Back-end (Azure Functions / .NET) ----------
+    # ---------- Back-end (Azure Functions .NET) ----------
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
@@ -49,10 +50,10 @@ jobs:
       uses: Azure/static-web-apps-deploy@v1
       with:
         azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-        repo_token:          ${{ secrets.GITHUB_TOKEN }}    # do komentarzy PR-ów
+        repo_token:          ${{ secrets.GITHUB_TOKEN }}
         action:              upload
-        app_location:        Frontend/FinAppFront           # źródła frontu
-        api_location:        Backend/Store                  # źródła funkcji
-        skip_app_build:      true                           # build zrobiony wyżej
+        app_location:        Frontend/FinAppFront
+        api_location:        Backend/Store
+        skip_app_build:      true
         skip_api_build:      true
         output_location:     Frontend/FinAppFront/dist/fin-app-front
