@@ -11,7 +11,7 @@ on:
 
 env:
   ANGULAR_DIR: Frontend/FinAppFront
-  API_CSPROJ:  src/Store/Store.csproj
+  API_CSPROJ: Backend/Store/Store.csproj   # ← poprawiona ścieżka
   PUBLISH_DIR: publish
 
 #─────────────────────────────────────────────────────────────────
@@ -39,13 +39,12 @@ jobs:
         npm ci
         npm run build -- --configuration production
 
-    # ── robocopy z wyzerowaniem kodu 0-3 ────────────────────────
+    # kopiujemy pliki SPA do wwwroot projektu API
     - name: Copy Angular assets to wwwroot
       shell: pwsh
       run: |
         $dest = Join-Path -Path (Split-Path '${{ env.API_CSPROJ }}') -ChildPath 'wwwroot'
         New-Item -ItemType Directory -Force -Path $dest | Out-Null
-
         robocopy "${{ env.ANGULAR_DIR }}/dist/fin-app-front" "$dest" /E /NJH /NJS /NDL
         if ($LASTEXITCODE -gt 3) { exit $LASTEXITCODE } else { exit 0 }
 
