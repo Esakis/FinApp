@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { UserModel } from '../models/user.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import { UserModel } from '../models/user.model';
 export class UserService {
   private userSubject: BehaviorSubject<UserModel | null> = new BehaviorSubject<UserModel | null>(null);
   public user$: Observable<UserModel | null> = this.userSubject.asObservable();
-  private baseUrl = 'https://localhost:7119';
+  private baseUrl = `${environment.apiUrl}`;
 
   constructor(private http: HttpClient) {}
 

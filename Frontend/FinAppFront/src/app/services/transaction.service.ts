@@ -3,13 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Transaction } from '../models/transaction.model';
 import { Category } from '../models/category.model';
-import { UserModel } from '../models/user.model'; 
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TransactionService {
-  private baseUrl = 'https://localhost:7119'; 
+ private baseUrl = `${environment.apiUrl}`;
 
   private categoriesSubject = new BehaviorSubject<Category[]>([]);
   public categories$ = this.categoriesSubject.asObservable();
