@@ -1,65 +1,104 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
+# ===============================================================
+#  Build & Deploy:  Angular front-end  +  .NET 8 Web API  →  Azure App Service
+#  Plan: Free (F1)  •  Runtime stack w portalu:  .NET 8 (LTS) / Windows
+# ===============================================================
 
-name: Build and deploy ASP.Net Core app to Azure Web App - FinApp
+name: Build and deploy FinApp to Azure Web App (F1)
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ main ]          # uruchamia się po każdym pushu do main
+  workflow_dispatch:            # pozwala odpalić ręcznie z karty Actions
 
+env:
+  # katalogi
+  ANGULAR_DIR: Frontend/FinAppFront
+  API_CSPROJ:  src/Store/Store.csproj
+  PUBLISH_DIR: publish
+
+#─────────────────────────────────────────────────────────────────
+# 1) BUILD
+#─────────────────────────────────────────────────────────────────
 jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+    # ① checkout
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
+    # ② Node – potrzebny do budowy Angulara
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+    # ③ .NET 8 SDK
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.x          # projekt już ma <TargetFramework>net8.0
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+    # ④ Build Angular → dist/fin-app-front
+    - name: Build Angular (front-end)
+      working-directory: ${{ env.ANGULAR_DIR }}
+      run: |
+        npm ci
+        npm run build -- --configuration production
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+    # ⑤ Kopiujemy dist do wwwroot projektu API
+    - name: Copy Angular assets to wwwroot
+      shell: pwsh
+      run: |
+        New-Item -Force -ItemType Directory "$(Split-Path '${{ env.API_CSPROJ }}')/wwwroot"
+        robocopy ${{ env.ANGULAR_DIR }}/dist/fin-app-front `
+                 $(Split-Path '${{ env.API_CSPROJ }}')/wwwroot `
+                 /E /NJH /NJS /NDL
 
+    # ⑥ dotnet build solution / csproj
+    - name: dotnet build
+      run: dotnet build ${{ env.API_CSPROJ }} -c Release
+
+    # ⑦ publish (self-contained artefakt)
+    - name: dotnet publish
+      run: dotnet publish ${{ env.API_CSPROJ }} -c Release -o ${{ env.PUBLISH_DIR }}
+
+    # ⑧ artefakt do kolejnego joba
+    - uses: actions/upload-artifact@v4
+      with:
+        name: finapp-artifact
+        path: ${{ env.PUBLISH_DIR }}
+
+#─────────────────────────────────────────────────────────────────
+# 2) DEPLOY
+#─────────────────────────────────────────────────────────────────
   deploy:
     runs-on: windows-latest
     needs: build
-    
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write     # OIDC log-in
+      contents: read
 
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9213863F16E6412D89AFBADD35BF055E }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_0FF71B2D203B4C1A8DD949B53A42CF6A }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3FC1188BDFCB4392A0BD5592CF2323F1 }}
+    - uses: actions/download-artifact@v4
+      with:
+        name: finapp-artifact
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'FinApp'
-          slot-name: 'Production'
-          package: .
+    # logowanie OIDC – sekrety stworzone przez portal
+    - name: Azure login (OIDC)
+      uses: azure/login@v2
+      with:
+        client-id:       ${{ secrets.AZUREAPPSERVICE_CLIENTID_9213863F16E6412D89AFBADD35BF055E }}
+        tenant-id:       ${{ secrets.AZUREAPPSERVICE_TENANTID_0FF71B2D203B4C1A8DD949B53A42CF6A }}
+        subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3FC1188BDFCB4392A0BD5592CF2323F1 }}
+
+    # zip-deploy do App Service
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name:  FinApp          # musi idealnie odpowiadać nazwie w portalu
+        slot-name: Production
+        package:   ${{ env.PUBLISH_DIR }}
