@@ -1,6 +1,6 @@
-# ===============================================================
-#  Build & Deploy  –  Angular + .NET 8  →  Azure App Service (F1)
-# ===============================================================
+# ==============================================
+#  Build & Deploy  –  Angular + .NET 8 ⇒ AppSvc
+# ==============================================
 
 name: Build and deploy FinApp to Azure Web App (F1)
 
@@ -11,11 +11,11 @@ on:
 
 env:
   ANGULAR_DIR: Frontend/FinAppFront
-  PUBLISH_DIR: publish
+  PUBLISH_DIR: publish        # jeden punkt prawdy
 
-#─────────────────────────────────────────────────────────────────
+# ───────────────────────────────────────────────
 # 1) BUILD
-#─────────────────────────────────────────────────────────────────
+# ───────────────────────────────────────────────
 jobs:
   build:
     runs-on: windows-latest
@@ -32,7 +32,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with: { dotnet-version: 8.x }
 
-    # ─── Znajdujemy Store.csproj ────────────────────────────────
+    # ─── znajdź Store.csproj ────────────────────
     - name: Locate Store.csproj
       id: locate
       shell: pwsh
@@ -40,16 +40,16 @@ jobs:
         $csproj = Get-ChildItem -Recurse -Filter Store.csproj | Select-Object -First 1
         if (-not $csproj) { Write-Error "Store.csproj not found"; exit 1 }
         echo "csproj=$($csproj.FullName.Replace('\','/'))" >> $env:GITHUB_OUTPUT
-        Write-Host "Found: $($csproj.FullName)"
+        Write-Host "Found: $csproj"
 
-    # ─── Budujemy Angulara ─────────────────────────────────────
+    # ─── build Angular ──────────────────────────
     - name: Build Angular
       working-directory: ${{ env.ANGULAR_DIR }}
       run: |
         npm ci
         npm run build -- --configuration production
 
-    # ─── Kopiujemy build → wwwroot ─────────────────────────────
+    # ─── copy dist → wwwroot ────────────────────
     - name: Copy Angular build to API/wwwroot
       shell: pwsh
       run: |
@@ -59,22 +59,22 @@ jobs:
         robocopy "${{ env.ANGULAR_DIR }}/dist/fin-app-front" "$dest" /E /NJH /NJS /NDL
         if ($LASTEXITCODE -gt 3) { exit $LASTEXITCODE } else { exit 0 }
 
-    # ─── Build & Publish API ───────────────────────────────────
+    # ─── build + publish API ────────────────────
     - name: dotnet build
       run: dotnet build "${{ steps.locate.outputs.csproj }}" -c Release
 
     - name: dotnet publish
       run: dotnet publish "${{ steps.locate.outputs.csproj }}" -c Release -o ${{ env.PUBLISH_DIR }}
 
-    # ─── Artefakt o nazwie *publish* ───────────────────────────
+    # ─── artefakt = katalog publish ─────────────
     - uses: actions/upload-artifact@v4
       with:
-        name: publish                 # ← NAZWA = katalog docelowy
+        name: publish            # *nazwa artefaktu*
         path: ${{ env.PUBLISH_DIR }}
 
-#─────────────────────────────────────────────────────────────────
+# ───────────────────────────────────────────────
 # 2) DEPLOY
-#─────────────────────────────────────────────────────────────────
+# ───────────────────────────────────────────────
   deploy:
     runs-on: windows-latest
     needs: build
@@ -83,11 +83,11 @@ jobs:
       contents: read
 
     steps:
-    # POBIERZ artefakt *publish* bez podfolderu
+    # ⇣ pobierz artefakt DO katalogu publish
     - uses: actions/download-artifact@v4
       with:
         name: publish
-        path: .                      # rozpakuj w katalogu roboczym
+        path: ${{ env.PUBLISH_DIR }}
 
     - name: Azure login (OIDC)
       uses: azure/login@v2
@@ -99,6 +99,6 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
-        app-name:  FinApp
+        app-name: FinApp
         slot-name: Production
-        package:   publish           # ← katalog z plikami
+        package: ${{ env.PUBLISH_DIR }}   # ← katalog istnieje
