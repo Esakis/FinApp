@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 
-		<SpaRoot>../Frontend/FinAppFront/</SpaRoot>
+		<SpaRoot>../../../Frontend/FinAppFront/</SpaRoot>
 		<SpaDist>$(SpaRoot)dist/fin-app-front/</SpaDist>
 	</PropertyGroup>
 
@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<Target Name="BuildSpa" BeforeTargets="Publish">
-		<Exec Command="npm ci"                WorkingDirectory="$(SpaRoot)" />
+		<Exec Command="npm ci" WorkingDirectory="$(SpaRoot)" />
 		<Exec Command="npm run build -- --configuration production"
 			  WorkingDirectory="$(SpaRoot)" />
 	</Target>
