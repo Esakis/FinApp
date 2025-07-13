@@ -39,7 +39,7 @@ jobs:
         npm ci
         npm run build -- --configuration production
 
-    # ── poprawiony krok robocopy ───────────────────────────────
+    # ── robocopy z wyzerowaniem kodu 0-3 ────────────────────────
     - name: Copy Angular assets to wwwroot
       shell: pwsh
       run: |
@@ -47,7 +47,7 @@ jobs:
         New-Item -ItemType Directory -Force -Path $dest | Out-Null
 
         robocopy "${{ env.ANGULAR_DIR }}/dist/fin-app-front" "$dest" /E /NJH /NJS /NDL
-        if ($LASTEXITCODE -gt 3) { exit $LASTEXITCODE }  # 0–3 = success
+        if ($LASTEXITCODE -gt 3) { exit $LASTEXITCODE } else { exit 0 }
 
     - name: dotnet build
       run: dotnet build ${{ env.API_CSPROJ }} -c Release
