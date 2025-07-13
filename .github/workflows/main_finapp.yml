@@ -11,7 +11,7 @@ on:
 
 env:
   ANGULAR_DIR: Frontend/FinAppFront
-  API_CSPROJ: Backend/Store/Store.csproj   # ← poprawiona ścieżka
+  API_CSPROJ:  Backend/Store/Store.csproj   # ← Twoje realne API
   PUBLISH_DIR: publish
 
 #─────────────────────────────────────────────────────────────────
@@ -29,18 +29,19 @@ jobs:
       uses: actions/setup-node@v4
       with: { node-version: 18.x }
 
-    - name: Setup .NET SDK
+    - name: Setup .NET SDK 8.x
       uses: actions/setup-dotnet@v4
       with: { dotnet-version: 8.x }
 
-    - name: Build Angular (front-end)
+    # ─── FRONTEND ───────────────────────────────────────────────
+    - name: Build Angular
       working-directory: ${{ env.ANGULAR_DIR }}
       run: |
         npm ci
         npm run build -- --configuration production
 
-    # kopiujemy pliki SPA do wwwroot projektu API
-    - name: Copy Angular assets to wwwroot
+    # ─── SPA → wwwroot ─────────────────────────────────────────
+    - name: Copy Angular build to API/wwwroot
       shell: pwsh
       run: |
         $dest = Join-Path -Path (Split-Path '${{ env.API_CSPROJ }}') -ChildPath 'wwwroot'
@@ -48,12 +49,14 @@ jobs:
         robocopy "${{ env.ANGULAR_DIR }}/dist/fin-app-front" "$dest" /E /NJH /NJS /NDL
         if ($LASTEXITCODE -gt 3) { exit $LASTEXITCODE } else { exit 0 }
 
+    # ─── BACKEND ───────────────────────────────────────────────
     - name: dotnet build
       run: dotnet build ${{ env.API_CSPROJ }} -c Release
 
     - name: dotnet publish
       run: dotnet publish ${{ env.API_CSPROJ }} -c Release -o ${{ env.PUBLISH_DIR }}
 
+    # artefakt dla jobu deploy
     - uses: actions/upload-artifact@v4
       with:
         name: finapp-artifact
@@ -83,6 +86,6 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
-        app-name:  FinApp
+        app-name:  FinApp          # dokładna nazwa w portalu
         slot-name: Production
         package:   ${{ env.PUBLISH_DIR }}
