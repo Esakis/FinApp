@@ -1,17 +1,16 @@
 # ===============================================================
-#  Build & Deploy:  Angular front-end  +  .NET 8 Web API  →  Azure App Service
-#  Plan: Free (F1)  •  Runtime stack w portalu:  .NET 8 (LTS) / Windows
+#  Build & Deploy  –  Angular SPA + .NET 8 Web API  →  Azure App Service (F1)
 # ===============================================================
 
 name: Build and deploy FinApp to Azure Web App (F1)
 
 on:
   push:
-    branches: [ main ]          # uruchamia się po każdym pushu do main
-  workflow_dispatch:            # pozwala odpalić ręcznie z karty Actions
+    branches: [ main ]      # automatycznie przy każdym pushu do main
+  workflow_dispatch:        # możliwość ręcznego uruchomienia
 
 env:
-  # katalogi
+  # katalog projektu SPA / API / publish
   ANGULAR_DIR: Frontend/FinAppFront
   API_CSPROJ:  src/Store/Store.csproj
   PUBLISH_DIR: publish
@@ -30,7 +29,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # ② Node – potrzebny do budowy Angulara
+    # ② Node – do builda Angulara
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
@@ -40,7 +39,7 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.x          # projekt już ma <TargetFramework>net8.0
+        dotnet-version: 8.x
 
     # ④ Build Angular → dist/fin-app-front
     - name: Build Angular (front-end)
@@ -49,24 +48,26 @@ jobs:
         npm ci
         npm run build -- --configuration production
 
-    # ⑤ Kopiujemy dist do wwwroot projektu API
+    # ⑤ Kopiujemy pliki SPA do wwwroot projektu API
     - name: Copy Angular assets to wwwroot
       shell: pwsh
       run: |
-        New-Item -Force -ItemType Directory "$(Split-Path '${{ env.API_CSPROJ }}')/wwwroot"
-        robocopy ${{ env.ANGULAR_DIR }}/dist/fin-app-front `
-                 $(Split-Path '${{ env.API_CSPROJ }}')/wwwroot `
-                 /E /NJH /NJS /NDL
+        # katalog docelowy
+        $dest = Join-Path -Path (Split-Path '${{ env.API_CSPROJ }}') -ChildPath 'wwwroot'
+        New-Item -ItemType Directory -Force -Path $dest | Out-Null
 
-    # ⑥ dotnet build solution / csproj
+        # kopiowanie
+        robocopy "${{ env.ANGULAR_DIR }}/dist/fin-app-front" "$dest" /E /NJH /NJS /NDL
+
+    # ⑥ Budujemy API
     - name: dotnet build
       run: dotnet build ${{ env.API_CSPROJ }} -c Release
 
-    # ⑦ publish (self-contained artefakt)
+    # ⑦ Publish
     - name: dotnet publish
       run: dotnet publish ${{ env.API_CSPROJ }} -c Release -o ${{ env.PUBLISH_DIR }}
 
-    # ⑧ artefakt do kolejnego joba
+    # ⑧ Artefakt do joba deploy
     - uses: actions/upload-artifact@v4
       with:
         name: finapp-artifact
@@ -79,7 +80,7 @@ jobs:
     runs-on: windows-latest
     needs: build
     permissions:
-      id-token: write     # OIDC log-in
+      id-token: write   # OIDC
       contents: read
 
     steps:
@@ -87,7 +88,7 @@ jobs:
       with:
         name: finapp-artifact
 
-    # logowanie OIDC – sekrety stworzone przez portal
+    # Logowanie do Azure przez OIDC (sekrety wygenerowane przez portal)
     - name: Azure login (OIDC)
       uses: azure/login@v2
       with:
@@ -95,10 +96,10 @@ jobs:
         tenant-id:       ${{ secrets.AZUREAPPSERVICE_TENANTID_0FF71B2D203B4C1A8DD949B53A42CF6A }}
         subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3FC1188BDFCB4392A0BD5592CF2323F1 }}
 
-    # zip-deploy do App Service
+    # Deploy ZIP-em do App Service
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
-        app-name:  FinApp          # musi idealnie odpowiadać nazwie w portalu
+        app-name:  FinApp          # dokładnie jak w portalu
         slot-name: Production
         package:   ${{ env.PUBLISH_DIR }}
