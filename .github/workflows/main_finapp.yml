@@ -6,11 +6,10 @@ name: Build and deploy FinApp to Azure Web App (F1)
 
 on:
   push:
-    branches: [ main ]      # automatycznie przy każdym pushu do main
-  workflow_dispatch:        # możliwość ręcznego uruchomienia
+    branches: [ main ]
+  workflow_dispatch:
 
 env:
-  # katalog projektu SPA / API / publish
   ANGULAR_DIR: Frontend/FinAppFront
   API_CSPROJ:  src/Store/Store.csproj
   PUBLISH_DIR: publish
@@ -21,53 +20,41 @@ env:
 jobs:
   build:
     runs-on: windows-latest
-    permissions:
-      contents: read
+    permissions: { contents: read }
 
     steps:
-    # ① checkout
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    # ② Node – do builda Angulara
     - name: Setup Node
       uses: actions/setup-node@v4
-      with:
-        node-version: 18.x
+      with: { node-version: 18.x }
 
-    # ③ .NET 8 SDK
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.x
+      with: { dotnet-version: 8.x }
 
-    # ④ Build Angular → dist/fin-app-front
     - name: Build Angular (front-end)
       working-directory: ${{ env.ANGULAR_DIR }}
       run: |
         npm ci
         npm run build -- --configuration production
 
-    # ⑤ Kopiujemy pliki SPA do wwwroot projektu API
+    # ── poprawiony krok robocopy ───────────────────────────────
     - name: Copy Angular assets to wwwroot
       shell: pwsh
       run: |
-        # katalog docelowy
         $dest = Join-Path -Path (Split-Path '${{ env.API_CSPROJ }}') -ChildPath 'wwwroot'
         New-Item -ItemType Directory -Force -Path $dest | Out-Null
 
-        # kopiowanie
         robocopy "${{ env.ANGULAR_DIR }}/dist/fin-app-front" "$dest" /E /NJH /NJS /NDL
+        if ($LASTEXITCODE -gt 3) { exit $LASTEXITCODE }  # 0–3 = success
 
-    # ⑥ Budujemy API
     - name: dotnet build
       run: dotnet build ${{ env.API_CSPROJ }} -c Release
 
-    # ⑦ Publish
     - name: dotnet publish
       run: dotnet publish ${{ env.API_CSPROJ }} -c Release -o ${{ env.PUBLISH_DIR }}
 
-    # ⑧ Artefakt do joba deploy
     - uses: actions/upload-artifact@v4
       with:
         name: finapp-artifact
@@ -80,15 +67,13 @@ jobs:
     runs-on: windows-latest
     needs: build
     permissions:
-      id-token: write   # OIDC
+      id-token: write
       contents: read
 
     steps:
     - uses: actions/download-artifact@v4
-      with:
-        name: finapp-artifact
+      with: { name: finapp-artifact }
 
-    # Logowanie do Azure przez OIDC (sekrety wygenerowane przez portal)
     - name: Azure login (OIDC)
       uses: azure/login@v2
       with:
@@ -96,10 +81,9 @@ jobs:
         tenant-id:       ${{ secrets.AZUREAPPSERVICE_TENANTID_0FF71B2D203B4C1A8DD949B53A42CF6A }}
         subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3FC1188BDFCB4392A0BD5592CF2323F1 }}
 
-    # Deploy ZIP-em do App Service
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
-        app-name:  FinApp          # dokładnie jak w portalu
+        app-name:  FinApp
         slot-name: Production
         package:   ${{ env.PUBLISH_DIR }}
