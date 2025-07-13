@@ -25,31 +25,28 @@ public class Startup
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
-        {
             app.UseDeveloperExceptionPage();
-        }
+
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
 
         app.UseHttpsRedirection();
         app.UseSwagger();
-
         app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-        });
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
+
         app.UseRouting();
 
-        app.UseCors(x => x
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowAnyOrigin()); // allow any origin
+        app.UseCors(x => x.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
 
         app.UseAuthorization();
-
 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
         });
-
     }
+
 }
