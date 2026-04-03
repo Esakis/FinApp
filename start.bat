@@ -5,44 +5,24 @@ echo.
 REM Przejdz do katalogu gdzie znajduje sie ten skrypt
 cd /d "%~dp0"
 
-echo [1/3] Installing frontend dependencies...
-cd "Frontend\BudgetTrackerFront"
-if %ERRORLEVEL% neq 0 (
-    echo ERROR: Folder Frontend\BudgetTrackerFront nie istnieje!
-    pause
-    exit /b 1
-)
+echo [1/2] Starting Frontend (Angular) in new window...
+start "BudgetTracker - Frontend" cmd /k "cd /d "%~dp0Frontend\BudgetTrackerFront" && npm start"
 
-call npm install
-if %ERRORLEVEL% neq 0 (
-    echo Failed to install frontend dependencies
-    pause
-    exit /b 1
-)
+echo [2/2] Starting Backend (.NET) in new window...
+start "BudgetTracker - Backend" cmd /k "cd /d "%~dp0Backend\Store\Store" && dotnet run"
 
 echo.
-echo [2/3] Building frontend...
-call npm run build
-if %ERRORLEVEL% neq 0 (
-    echo Failed to build frontend
-    pause
-    exit /b 1
-)
-
+echo ========================================
+echo  BudgetTracker is starting...
+echo ========================================
 echo.
-echo [3/3] Starting backend server...
-cd "..\..\Backend\Store\Store"
-if %ERRORLEVEL% neq 0 (
-    echo ERROR: Folder Backend\Store\Store nie istnieje!
-    pause
-    exit /b 1
-)
-
-dotnet run
-if %ERRORLEVEL% neq 0 (
-    echo Failed to start backend server
-    pause
-    exit /b 1
-)
-
+echo Frontend: http://localhost:4200
+echo Backend:  https://localhost:7119
+echo.
+echo Dwa nowe okna zostaly otwarte:
+echo  - Frontend (Angular dev server)
+echo  - Backend (.NET API)
+echo.
+echo Aby zatrzymac serwery, zamknij te okna.
+echo.
 pause
