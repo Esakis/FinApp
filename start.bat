@@ -1,9 +1,9 @@
 @echo off
-echo Starting FinApp locally...
+echo Starting BudgetTracker locally...
 echo.
 
 echo [1/3] Installing frontend dependencies...
-cd "Frontend\FinAppFront"
+cd "Frontend\BudgetTrackerFront"
 call npm install
 if %ERRORLEVEL% neq 0 (
     echo Failed to install frontend dependencies

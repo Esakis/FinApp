@@ -5,8 +5,8 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 
-		<SpaRoot>../../../Frontend/FinAppFront/</SpaRoot>
-		<SpaDist>$(SpaRoot)dist/fin-app-front/</SpaDist>
+		<SpaRoot>../../../Frontend/BudgetTrackerFront/</SpaRoot>
+		<SpaDist>$(SpaRoot)dist/budget-tracker-front/</SpaDist>
 	</PropertyGroup>
 
 	<ItemGroup>

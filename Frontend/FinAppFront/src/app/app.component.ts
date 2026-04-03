@@ -7,7 +7,7 @@ import { TransactionService } from './services/transaction.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'FinAppFront';
+  title = 'BudgetTrackerFront';
   constructor(private transactionService: TransactionService) {}
 
   ngOnInit() {

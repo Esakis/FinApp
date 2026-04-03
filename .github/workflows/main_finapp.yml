@@ -2,7 +2,7 @@
 #  Build & Deploy  –  Angular + .NET 8 ⇒ AppSvc
 # ==============================================
 
-name: Build and deploy FinApp to Azure Web App (F1)
+name: Build and deploy BudgetTracker to Azure Web App (F1)
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  ANGULAR_DIR: Frontend/FinAppFront
+  ANGULAR_DIR: Frontend/BudgetTrackerFront
   PUBLISH_DIR: publish        # jeden punkt prawdy
 
 # ───────────────────────────────────────────────
@@ -56,7 +56,7 @@ jobs:
         $apiDir = Split-Path '${{ steps.locate.outputs.csproj }}'
         $dest   = Join-Path $apiDir 'wwwroot'
         New-Item -ItemType Directory -Force -Path $dest | Out-Null
-        robocopy "${{ env.ANGULAR_DIR }}/dist/fin-app-front" "$dest" /E /NJH /NJS /NDL
+        robocopy "${{ env.ANGULAR_DIR }}/dist/budget-tracker-front" "$dest" /E /NJH /NJS /NDL
         if ($LASTEXITCODE -gt 3) { exit $LASTEXITCODE } else { exit 0 }
 
     # ─── build + publish API ────────────────────
@@ -99,6 +99,6 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
-        app-name: FinApp
+        app-name: BudgetTracker
         slot-name: Production
         package: ${{ env.PUBLISH_DIR }}   # ← katalog istnieje

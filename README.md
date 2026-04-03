@@ -1,4 +1,4 @@
-# FinApp
+# BudgetTracker
 
 Aplikacja webowa do zarządzania finansami osobistymi, umożliwiająca śledzenie transakcji, kategoryzację wydatków i przychodów oraz zarządzanie budżetem.
 
@@ -60,7 +60,7 @@ Backend/Store/Store/
 
 ### Frontend (Angular)
 ```
-Frontend/FinAppFront/src/app/
+Frontend/BudgetTrackerFront/src/app/
 ├── components/          # Komponenty aplikacji
 │   ├── transaction-form/
 │   └── transaction-list/
@@ -140,7 +140,7 @@ Swagger UI: `https://localhost:7119/swagger`
 #### Frontend
 
 ```bash
-cd Frontend\FinAppFront
+cd Frontend\BudgetTrackerFront
 npm install
 npm start
 ```
@@ -159,10 +159,10 @@ Aplikacja Angular zostanie automatycznie zbudowana i skopiowana do `wwwroot/` po
 ## 📁 Struktura projektu
 
 ```
-FinApp/
+BudgetTracker/
 ├── .github/
 │   └── workflows/
-│       └── main_finapp.yml      # CI/CD pipeline dla Azure
+│       └── main_budgettracker.yml      # CI/CD pipeline dla Azure
 ├── Backend/
 │   └── Store/
 │       ├── Store/               # Projekt główny
@@ -177,7 +177,7 @@ FinApp/
 │       │   └── Store.csproj
 │       └── Store.sln
 ├── Frontend/
-│   └── FinAppFront/
+│   └── BudgetTrackerFront/
 │       ├── src/
 │       │   ├── app/
 │       │   │   ├── components/
@@ -311,7 +311,7 @@ Aplikacja jest automatycznie wdrażana na Azure App Service przy każdym push do
    - Deploy do Azure Web App (slot: Production)
 
 **Konfiguracja:**
-- App Name: `FinApp`
+- App Name: `BudgetTracker`
 - Runtime: .NET 6/8
 - Plan: F1 (Free tier)
 
@@ -347,7 +347,7 @@ export const environment = {
 
 ### Frontend
 ```bash
-cd Frontend\FinAppFront
+cd Frontend\BudgetTrackerFront
 npm test              # Uruchom testy jednostkowe
 npm run test:coverage # Testy z pokryciem kodu
 ```
@@ -364,7 +364,7 @@ Projekt jest dostępny na licencji określonej w pliku `LICENSE`.
 
 ## 👥 Autorzy
 
-Projekt FinApp - Aplikacja do zarządzania finansami osobistymi
+Projekt BudgetTracker - Aplikacja do zarządzania finansami osobistymi
 
 ---
 
