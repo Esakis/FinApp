@@ -73,32 +73,32 @@ jobs:
         path: ${{ env.PUBLISH_DIR }}
 
 # ───────────────────────────────────────────────
-# 2) DEPLOY
+# 2) DEPLOY - ZAKOMENTOWANE (nie używane na razie)
 # ───────────────────────────────────────────────
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-    # ⇣ pobierz artefakt DO katalogu publish
-    - uses: actions/download-artifact@v4
-      with:
-        name: publish
-        path: ${{ env.PUBLISH_DIR }}
-
-    - name: Azure login (OIDC)
-      uses: azure/login@v2
-      with:
-        client-id:       ${{ secrets.AZUREAPPSERVICE_CLIENTID_9213863F16E6412D89AFBADD35BF055E }}
-        tenant-id:       ${{ secrets.AZUREAPPSERVICE_TENANTID_0FF71B2D203B4C1A8DD949B53A42CF6A }}
-        subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3FC1188BDFCB4392A0BD5592CF2323F1 }}
-
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: BudgetTracker
-        slot-name: Production
-        package: ${{ env.PUBLISH_DIR }}   # ← katalog istnieje
+#  deploy:
+#    runs-on: windows-latest
+#    needs: build
+#    permissions:
+#      id-token: write
+#      contents: read
+#
+#    steps:
+#    # ⇣ pobierz artefakt DO katalogu publish
+#    - uses: actions/download-artifact@v4
+#      with:
+#        name: publish
+#        path: ${{ env.PUBLISH_DIR }}
+#
+#    - name: Azure login (OIDC)
+#      uses: azure/login@v2
+#      with:
+#        client-id:       ${{ secrets.AZUREAPPSERVICE_CLIENTID_9213863F16E6412D89AFBADD35BF055E }}
+#        tenant-id:       ${{ secrets.AZUREAPPSERVICE_TENANTID_0FF71B2D203B4C1A8DD949B53A42CF6A }}
+#        subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3FC1188BDFCB4392A0BD5592CF2323F1 }}
+#
+#    - name: Deploy to Azure Web App
+#      uses: azure/webapps-deploy@v3
+#      with:
+#        app-name: BudgetTracker
+#        slot-name: Production
+#        package: ${{ env.PUBLISH_DIR }}   # ← katalog istnieje
